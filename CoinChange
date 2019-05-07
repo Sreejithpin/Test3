@@ -1,0 +1,98 @@
+
+    
+    // This uses bottom up dynamic progrmmaing
+    // mostly return number of coins and we can get the full list too
+    // Much better Time complexity O(coins.Length * amount)
+    //Can use this if output format is not specifically mentioned
+    public int CoinChange(int[] coins, int amount) {
+     
+      
+        int[] dp = new int[amount+1];
+        
+        var dict = new Dictionary<int,int>();
+        
+        Array.Fill(dp,amount+1,1,amount);
+        
+        for(int i =0; i<coins.Length; i++){
+            
+            for(int j =coins[i] ; j<=amount; j++){
+                
+                dp[j] = Math.Min(dp[j], dp[j-coins[i]]+1);
+                
+                // forming the list
+                if(dict.ContainsKey(j) && dp[j] <dict[j] ){
+                    dict[j] =dp[j];
+                   
+                }
+                else{
+                    dict.Add(j,dp[j]);
+                   
+                }
+                  
+                 
+                
+            }
+            
+        }
+        
+        //Console.WriteLine(dict[amount]);
+        //we have the full list in the dict, below statement will print the number of coins used for amount ,say 135
+        
+        
+        Console.WriteLine("Number of coins for amount = "+dp[amount]);
+        
+        return dp[amount];
+        
+    }
+    
+     
+    
+    
+    // This can be used for getting the output in the form of coin used, number of coins
+    //But this is not efficient as the DP approach, but can be used if the output is specific as said above
+    //Time complesxity O (amount ^coins.Length)
+    public Dictionary<int,int> CoinChange1(int[] coins, int amount){
+        
+        var q = new Queue< Tuple<int,int,Dictionary<int,int>>>();
+        q.Enqueue(new Tuple<int,int,Dictionary<int,int>>(amount,0, new Dictionary<int,int>()) );
+        
+        int mincnt = amount+1;
+        var res = new Dictionary<int,int>();
+        
+        while(q.Count>0){
+            
+            var t = q.Dequeue();
+            var amt = t.Item1;
+            var cnt = t.Item2;
+            var dict = t.Item3;
+            
+            if(amt ==0){
+                if(cnt < mincnt){
+                    mincnt =cnt;
+                    res = dict;
+                }
+            }
+            
+            for(int i =0; i< coins.Length; i++){
+                if(coins[i] > amt){
+                    break;
+                }
+                
+                var dict1 = dict.ToDictionary(x=>x.Key,x=>x.Value);
+                if(dict1.ContainsKey(coins[i])){
+                    dict1[coins[i]]++;
+                }
+                else{
+                    dict1.Add(coins[i],1);
+                }
+                 q.Enqueue(new Tuple<int,int,Dictionary<int,int>>(amt - coins[i],cnt+1,dict1) );
+                
+            }
+        }
+        
+        foreach(var d in res){
+            Console.WriteLine("Coin value: "+d.Key + " no:of coins: "+d.Value);
+        }
+        
+        return res;
+    }
