@@ -8,7 +8,8 @@
         q.Enqueue(new Tuple<int,int,Dictionary<int,int>>(amount,0, new Dictionary<int,int>()) );
         
         int mincnt = amount+1;
-        var res = new Dictionary<int,int>();
+        var visited = new bool[amount+1];
+  
         
         while(q.Count>0){
             
@@ -18,32 +19,33 @@
             var dict = t.Item3;
             
             if(amt ==0){
-                if(cnt < mincnt){
-                    mincnt =cnt;
-                    res = dict;
+               return dict;
+            }
+            
+            if( !visited[amt]){
+                for(int i =0; i< coins.Length; i++){
+                    if(coins[i] > amt){
+                        continue;
+                    }
+
+                    var dict1 = dict.ToDictionary(x=>x.Key,x=>x.Value);
+                    if(dict1.ContainsKey(coins[i])){
+                        dict1[coins[i]]++;
+                    }
+                    else{
+                        dict1.Add(coins[i],1);
+                    }
+                     q.Enqueue(new Tuple<int,int,Dictionary<int,int>>(amt - coins[i],cnt+1,dict1) );
+
                 }
             }
             
-            for(int i =0; i< coins.Length; i++){
-                if(coins[i] > amt){
-                    break;
-                }
-                
-                var dict1 = dict.ToDictionary(x=>x.Key,x=>x.Value);
-                if(dict1.ContainsKey(coins[i])){
-                    dict1[coins[i]]++;
-                }
-                else{
-                    dict1.Add(coins[i],1);
-                }
-                 q.Enqueue(new Tuple<int,int,Dictionary<int,int>>(amt - coins[i],cnt+1,dict1) );
-                
-            }
+            visited[amt] = true;
+            
+            
         }
         
-        foreach(var d in res){
-            Console.WriteLine("Coin value: "+d.Key + " no:of coins: "+d.Value);
-        }
+      
         
-        return res;
+        return new Dictionary<int,int>();
     }
