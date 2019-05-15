@@ -1,0 +1,14 @@
+ public int CoinChange(int[] coins, int amount) {     
+        int cnt =0;        
+        for(int i = coins.Length-1;i>=0; i--){
+            if(amount >= coins[i]){
+                cnt+= amount/ coins[i];
+                amount%= coins[i];                
+                if(amount<1){
+                    return cnt;
+                }
+            }
+        }        
+        return cnt;
+  }
+        
